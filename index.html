@@ -1,0 +1,1084 @@
+```html
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Soal HOTS Otomatis SD - Kombel SINABA SDN Soko</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                        },
+                        sinaba: {
+                            emerald: '#059669',
+                            amber: '#d97706',
+                            purple: '#7c3aed',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; font-size: 12pt; }
+            .page-break { page-break-before: always; }
+            .card-shadow { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+        .print-only { display: none; }
+        
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .stimulus-box {
+            border-left: 4px solid #0284c7;
+            background-color: #f8fafc;
+        }
+
+        .editable-field:focus {
+            outline: 2px solid #0284c7;
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <header class="bg-gradient-to-r from-brand-800 via-brand-700 to-indigo-900 text-white shadow-lg sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full shadow-sm border border-white/20 bg-white/10 text-amber-300">
+                        <i class="fa-solid fa-brain text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white">GENERATOR SOAL HOTS SD</h1>
+                            <span class="bg-amber-400 text-slate-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Kurikulum Merdeka 2026</span>
+                        </div>
+                        <p class="text-xs text-brand-100 flex items-center gap-1.5">
+                            <span><i class="fa-solid fa-users-gear text-amber-300"></i> Dibuat oleh: <strong>Kombel SINABA</strong> SD Negeri Soko</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="switchTab('generator')" id="nav-btn-generator" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/20 text-white hover:bg-white/30 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generator
+                    </button>
+                    <button onclick="switchTab('bankSoal')" id="nav-btn-bankSoal" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 text-brand-100 hover:bg-white/20 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-box-archive"></i> Bank Soal Tersimpan (<span id="saved-count">0</span>)
+                    </button>
+                    <button onclick="openHelpModal()" class="p-1.5 text-brand-100 hover:text-white hover:bg-white/10 rounded-lg transition" title="Bantuan & Panduan">
+                        <i class="fa-solid fa-circle-question text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- Tab 1: Generator Form & Result Preview -->
+        <div id="tab-generator" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Panel: Input Configuration Form -->
+            <div class="lg:col-span-4 space-y-5 no-print">
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute -top-12 -right-12 w-28 h-28 bg-brand-50 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                        <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+                            <i class="fa-solid fa-sliders text-brand-500"></i> Parameter Soal HOTS
+                        </h2>
+                        <button onclick="resetForm()" class="text-xs text-slate-400 hover:text-brand-600 flex items-center gap-1 transition">
+                            <i class="fa-solid fa-rotate-left"></i> Reset
+                        </button>
+                    </div>
+
+                    <form id="generator-form" onsubmit="handleGenerate(event)" class="space-y-4">
+                        
+                        <!-- Mata Pelajaran -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Mata Pelajaran SD</label>
+                            <div class="relative">
+                                <select id="mapel" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-brand-500 focus:bg-white transition appearance-none">
+                                    <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                                    <option value="Bahasa Indonesia" selected>Bahasa Indonesia</option>
+                                    <option value="PAI & Budi Pekerti">PAI & Budi Pekerti</option>
+                                    <option value="IPAS">IPAS (Ilmu Pengetahuan Alam & Sosial)</option>
+                                    <option value="PJOK">PJOK (Pendidikan Jasmani, Olahraga & Kesehatan)</option>
+                                    <option value="Matematika">Matematika</option>
+                                    <option value="Seni Rupa">Seni Rupa</option>
+                                    <option value="Seni Tari">Seni Tari</option>
+                                    <option value="Seni Musik">Seni Musik</option>
+                                    <option value="Koding & Berpikir Komputasional">Koding & KA (Koding & Berpikir Komputasional)</option>
+                                    <option value="Bahasa Inggris">Bahasa Inggris</option>
+                                    <option value="Bahasa Jawa">Bahasa Jawa (Muatan Lokal)</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-3 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <!-- Fase & Kelas Row -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Fase Kurikulum</label>
+                                <select id="fase" onchange="syncKelasByFase()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Fase A (Kelas 1-2)">Fase A</option>
+                                    <option value="Fase B (Kelas 3-4)" selected>Fase B</option>
+                                    <option value="Fase C (Kelas 5-6)">Fase C</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Kelas SD</label>
+                                <select id="kelas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="1">Kelas 1</option>
+                                    <option value="2">Kelas 2</option>
+                                    <option value="3">Kelas 3</option>
+                                    <option value="4" selected>Kelas 4</option>
+                                    <option value="5">Kelas 5</option>
+                                    <option value="6">Kelas 6</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Jenis Soal & Jumlah -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Jenis Soal</label>
+                                <select id="jenisSoal" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Pilihan Ganda">Pilihan Ganda</option>
+                                    <option value="Pilihan Ganda Kompleks">Pilihan Ganda Kompleks</option>
+                                    <option value="Menjodohkan">Menjodohkan</option>
+                                    <option value="Isian Singkat">Isian Singkat</option>
+                                    <option value="Uraian / Essay">Uraian / Essay</option>
+                                    <option value="Campuran (PG, Isian, Uraian)">Campuran Variatif</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Jumlah Soal</label>
+                                <select id="jumlahSoal" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="1">1 Soal Contoh</option>
+                                    <option value="3" selected>3 Soal</option>
+                                    <option value="5">5 Soal</option>
+                                    <option value="10">10 Soal Paket Kompleks</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Tingkat Kesulitan HOTS & Jenis Stimulus -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tingkat HOTS</label>
+                                <select id="kesulitan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Mudah (C4 - Menganalisis)">Mudah (C4 - Analisis)</option>
+                                    <option value="Sedang (C5 - Mengevaluasi)" selected>Sedang (C5 - Evaluasi)</option>
+                                    <option value="Sulit (C6 - Mencipta / Problem Solving)">Sulit (C6 - Mencipta)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bentuk Stimulus</label>
+                                <select id="tipeStimulus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Otomatis Sesuai Materi" selected>Otomatis AI</option>
+                                    <option value="Cerita Studi Kasus">Cerita / Kasus</option>
+                                    <option value="Tabel Data / Grafik Textual">Tabel Data / Grafik</option>
+                                    <option value="Dialog Percakapan">Dialog Tokoh SD</option>
+                                    <option value="Skenario Problem Solving">Skenario Masalah</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Materi / Tujuan Pembelajaran (TP) -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Materi / Tujuan Pembelajaran (TP)</label>
+                                <button type="button" onclick="insertSampleTP()" class="text-[11px] text-brand-600 hover:underline font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-lightbulb text-amber-500"></i> Contoh TP
+                                </button>
+                            </div>
+                            <textarea id="materi" rows="3" required placeholder="Tuliskan materi atau TP spesifik. Contoh: Menganalisis dampak sampah plastik terhadap ekosistem sungai dan merumuskan solusinya..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition resize-none"></textarea>
+                        </div>
+
+                        <!-- Checkbox Opsi Tambahan -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="generate-image-prompt" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                                <span class="text-xs font-medium text-slate-700">Sertakan Ilustrasi Gambar pada Stimulus</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="include-rubrik" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                                <span class="text-xs font-medium text-slate-700">Sertakan Kunci Jawaban & Rubrik Penskoran</span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="btn-generate" class="w-full py-3.5 px-4 bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.99] flex items-center justify-center gap-2 text-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                            <span>Generate Soal HOTS Otomatis</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Card Informasi Kombel -->
+                <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-4 rounded-2xl shadow-sm border border-indigo-800 text-xs leading-relaxed space-y-2">
+                    <div class="flex items-center gap-2 text-amber-300 font-bold">
+                        <div class="w-6 h-6 flex items-center justify-center rounded-full bg-white/10">
+                            <i class="fa-solid fa-brain text-sm"></i>
+                        </div>
+                        <span>Kombel SINABA - SD Negeri Soko</span>
+                    </div>
+                    <p class="text-slate-300">
+                        Inisiatif Komunitas Belajar SD Negeri Soko untuk membantu guru menyusun asesmen berkualitas tinggi sesuai standar Kurikulum Merdeka & prinsip HOTS (High Order Thinking Skills).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Panel: Output Document Preview & Action Bar -->
+            <div class="lg:col-span-8 space-y-4">
+                
+                <!-- Action Toolbar for Results -->
+                <div id="action-toolbar" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="status-badge" class="text-xs font-bold text-slate-700">Siap Membuat Soal</span>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="toggleKeyAnswers()" id="btn-toggle-key" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-eye-slash"></i> <span id="toggle-key-text">Sembunyikan Kunci</span>
+                        </button>
+                        <button onclick="copyToClipboard()" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition flex items-center gap-1.5" title="Salin Teks Semua Soal">
+                            <i class="fa-solid fa-copy"></i> Salin
+                        </button>
+                        <button onclick="printWorksheet()" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition flex items-center gap-1.5" title="Cetak atau Cetak PDF">
+                            <i class="fa-solid fa-print"></i> Cetak PDF
+                        </button>
+                        <button onclick="exportToDocx()" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-word"></i> Unduh DOCX
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Document Worksheet Paper Container -->
+                <div id="worksheet-paper" class="bg-white rounded-2xl border border-slate-200 shadow-md p-6 sm:p-10 min-h-[600px] relative">
+                    
+                    <!-- Empty Initial State -->
+                    <div id="empty-state" class="py-20 text-center space-y-4">
+                        <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mx-auto text-brand-500 text-3xl">
+                            <i class="fa-solid fa-file-circle-plus"></i>
+                        </div>
+                        <div class="max-w-md mx-auto space-y-1">
+                            <h3 class="font-bold text-slate-800 text-base">Belum Ada Soal Dibuat</h3>
+                            <p class="text-xs text-slate-500">Silakan pilih Mata Pelajaran, Kelas, dan ketikkan Tujuan Pembelajaran pada formulir di sebelah kiri, lalu klik <strong>Generate Soal HOTS</strong>.</p>
+                        </div>
+                        <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-3.5 py-2 rounded-xl text-xs font-medium">
+                            <i class="fa-solid fa-circle-info text-amber-500"></i>
+                            <span>Soal dilengkapi Stimulus Kontekstual, Kunci Jawaban, & Rubrik Penskoran.</span>
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner Overlay -->
+                    <div id="loading-state" class="hidden py-24 text-center space-y-4">
+                        <div class="inline-block relative w-16 h-16">
+                            <div class="absolute top-0 left-0 w-full h-full border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
+                            <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-brand-600 text-xl">
+                                <i class="fa-solid fa-brain animate-bounce"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 id="loading-title" class="font-bold text-slate-800 text-base">Merancang Soal HOTS Berbasis Stimulus...</h3>
+                            <p id="loading-subtitle" class="text-xs text-slate-500 mt-1">Mengolah Taksonomi Bloom C4-C6 sesuai Kurikulum Merdeka 2026...</p>
+                        </div>
+                    </div>
+
+                    <!-- Generated Content Render Target -->
+                    <div id="generated-content" class="hidden space-y-6">
+                        
+                        <!-- Kop Surat Asesmen SD -->
+                        <div class="border-b-4 border-double border-slate-900 pb-4 text-center relative">
+                            <div class="flex items-center justify-between gap-4 mb-2">
+                                <div class="w-14 h-14 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 text-2xl font-bold no-print">
+                                    <i class="fa-solid fa-school"></i>
+                                </div>
+                                <div class="flex-1 text-center">
+                                    <h4 class="font-extrabold text-slate-900 text-sm tracking-wider uppercase">PEMERINTAH KOTA PEKALONGAN</h4>
+                                    <h3 class="font-black text-slate-900 text-lg sm:text-xl tracking-tight uppercase">SD NEGERI SOKO</h3>
+                                    <p class="text-[11px] text-slate-600 font-medium">ASESMEN SUMATIF / FORMATIF KURIKULUM MERDEKA</p>
+                                    <p class="text-[10px] text-slate-500">Diampu & Dikembangkan oleh Komunitas Belajar (Kombel) SINABA</p>
+                                </div>
+                                <div class="w-14 h-14 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 text-2xl font-bold no-print">
+                                    <i class="fa-solid fa-book-bookmark"></i>
+                                </div>
+                            </div>
+
+                            <!-- Meta Header Table -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-left bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs mt-3">
+                                <div><span class="text-slate-500 font-medium">Mata Pelajaran:</span> <strong id="out-mapel" class="block text-slate-800">Bahasa Indonesia</strong></div>
+                                <div><span class="text-slate-500 font-medium">Kelas / Fase:</span> <strong id="out-kelas-fase" class="block text-slate-800">Kelas 4 / Fase B</strong></div>
+                                <div><span class="text-slate-500 font-medium">Tingkat HOTS:</span> <strong id="out-kesulitan" class="block text-slate-800">Sedang (C5)</strong></div>
+                                <div><span class="text-slate-500 font-medium">Tahun Ajaran:</span> <strong class="block text-slate-800">2026/2027</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- TP Banner -->
+                        <div class="bg-brand-50 border border-brand-200 rounded-xl p-3.5 text-xs text-brand-900">
+                            <strong><i class="fa-solid fa-bullseye text-brand-600 mr-1"></i> Tujuan Pembelajaran / Materi:</strong>
+                            <p id="out-tp-materi" class="mt-0.5 text-slate-700 italic">Menganalisis isi teks narasi kontekstual...</p>
+                        </div>
+
+                        <!-- Questions List Container -->
+                        <div id="questions-container" class="space-y-8">
+                            <!-- Dynamic Questions inserted here -->
+                        </div>
+
+                        <!-- Answer Key & Rubric Section -->
+                        <div id="answer-key-section" class="mt-10 pt-6 border-t-2 border-slate-300 space-y-4">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex items-center justify-between">
+                                <h3 class="font-bold text-emerald-900 text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-key text-emerald-600"></i> Kunci Jawaban & Pedoman Penskoran
+                                </h3>
+                                <span class="text-[11px] bg-emerald-200 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold uppercase">Untuk Guru SD</span>
+                            </div>
+                            <div id="keys-container" class="space-y-4 text-xs text-slate-800">
+                                <!-- Dynamic Keys inserted here -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tab 2: Saved Item Bank (Bank Soal) -->
+        <div id="tab-bankSoal" class="hidden space-y-4 no-print">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-box-archive text-brand-500"></i> Bank Soal HOTS Tersimpan
+                    </h2>
+                    <p class="text-xs text-slate-500">Kumpulan paket soal HOTS yang pernah Anda buat dan simpan secara lokal.</p>
+                </div>
+                <button onclick="clearAllSaved()" class="text-xs text-red-600 hover:text-red-700 font-semibold px-3 py-1.5 border border-red-200 rounded-lg bg-red-50 hover:bg-red-100 transition">
+                    <i class="fa-solid fa-trash-can"></i> Hapus Semua Bank Soal
+                </button>
+            </div>
+
+            <div id="bank-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Saved items rendered here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Bantuan & Tentang Kombel SINABA -->
+    <div id="help-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 relative">
+            <button onclick="closeHelpModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base">Tentang & Panduan Penggunaan</h3>
+                    <p class="text-xs text-slate-500">Generator Soal HOTS SD - Kombel SINABA</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+                <p>
+                    Aplikasi ini dirancang khusus untuk mempermudah Bapak/Ibu Guru SD dalam membuat soal-soal berkualitas tinggi berstandar <strong>HOTS (Higher Order Thinking Skills)</strong> sesuai panduan <strong>Kurikulum Merdeka 2026</strong>.
+                </p>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                    <h4 class="font-bold text-slate-800">Fitur Unggulan:</h4>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700">
+                        <li><strong>Stimulus Otomatis:</strong> AI menyusun cerita, tabel data, dialog, atau grafik kontekstual anak SD.</li>
+                        <li><strong>Taksonomi Bloom C4-C6:</strong> Soal menuntut daya analisis, evaluasi, dan pemecahan masalah.</li>
+                        <li><strong>12 Mata Pelajaran SD:</strong> Termasuk Koding & KA, Bahasa Jawa, Seni Rupa, Seni Tari, Musik, PJOK, PAI.</li>
+                        <li><strong>Unduh DOCX Rapi:</strong> Format Word langsung siap cetak lengkap dengan Kop Sekolah.</li>
+                        <li><strong>Dibuat Oleh:</strong> Kombel SINABA SD Negeri Soko.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-2 text-right">
+                <button onclick="closeHelpModal()" class="px-4 py-2 bg-brand-600 text-white font-bold rounded-xl text-xs hover:bg-brand-700 transition">
+                    Mengerti & Lanjutkan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-100 border-t border-slate-200 py-4 text-center text-xs text-slate-500 no-print mt-auto">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>
+                © 2026 <strong>Generator Soal HOTS SD</strong> - Kombel SINABA SD Negeri Soko.
+            </div>
+            <div class="flex items-center gap-3 text-slate-400">
+                <span>Kurikulum Merdeka SD</span>
+                <span>•</span>
+                <span>Taksonomi Bloom C4-C6</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample TP Prompts per Mapel for fast testing
+        const SAMPLE_TPS = {
+            "Bahasa Indonesia": "Peserta didik dapat menganalisis informasi berupa fakta dan opini dalam teks narasi tentang lingkungan hidup serta menemukan pesan tersirat.",
+            "IPAS": "Peserta didik menganalisis rantai makanan dalam ekosistem sawah dan memprediksi dampak jika populasi katak menurun drastis.",
+            "Matematika": "Peserta didik dapat menganalisis data dalam bentuk tabel/grafik batang dan memecahkan masalah kontekstual terkait rata-rata dan penyajian data.",
+            "Pendidikan Pancasila": "Peserta didik dapat mengevaluasi penerapan sila ke-3 Pancasila (Gotong Royong) dalam menyelesaikan konflik keragaman di sekolah.",
+            "PAI & Budi Pekerti": "Peserta didik menganalisis perilaku jujur dan amanah dalam kehidupan sehari-hari di sekolah berdasarkan kisah keteladanan Nabi Muhammad SAW.",
+            "PJOK": "Peserta didik dapat menganalisis kombinasi gerak dasar lokomotor dan manipulatif dalam permainan bola kecil serta mengevaluasi strategi kerja sama tim.",
+            "Seni Rupa": "Peserta didik dapat merancang ragam hias pola geometris berdasarkan prinsip keseimbangan dan irama visual karya seni tradisional.",
+            "Seni Tari": "Peserta didik menganalisis makna gerakan tari daerah setempat dan mengevaluasi kekompakan serta ekspresi penari.",
+            "Seni Musik": "Peserta didik dapat mengidentifikasi pola irama lagu daerah dan mengevaluasi harmonisasi ansambel musik sederhana.",
+            "Koding & Berpikir Komputasional": "Peserta didik dapat menganalisis urutan langkah (algoritma) lintasan robot perintis dan menemukan kesalahan (debugging) dalam instruksi pergerakan.",
+            "Bahasa Inggris": "Students can analyze a short contextual dialogue about daily routines and evaluate appropriate polite expressions in spending time at school.",
+            "Bahasa Jawa": "Peserta didik dapat menganalisis isi tembang Macapat (Pocung) lan nemokake pitutur luhur sarta unggah-ungguh basa kang trep."
+        };
+
+        // State Variables
+        let currentGeneratedData = null;
+        let savedBankSoal = JSON.parse(localStorage.getItem('sinaba_bank_soal') || '[]');
+        let showKeyAnswers = true;
+
+        window.onload = function() {
+            updateSavedCount();
+            renderSavedBankList();
+        };
+
+        function switchTab(tabName) {
+            document.getElementById('tab-generator').classList.toggle('hidden', tabName !== 'generator');
+            document.getElementById('tab-bankSoal').classList.toggle('hidden', tabName !== 'bankSoal');
+            
+            document.getElementById('nav-btn-generator').className = tabName === 'generator' 
+                ? "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/20 text-white hover:bg-white/30 transition flex items-center gap-1.5"
+                : "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 text-brand-100 hover:bg-white/20 transition flex items-center gap-1.5";
+                
+            document.getElementById('nav-btn-bankSoal').className = tabName === 'bankSoal' 
+                ? "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/20 text-white hover:bg-white/30 transition flex items-center gap-1.5"
+                : "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 text-brand-100 hover:bg-white/20 transition flex items-center gap-1.5";
+        }
+
+        function syncKelasByFase() {
+            const fase = document.getElementById('fase').value;
+            const kelasSelect = document.getElementById('kelas');
+            if (fase.includes('Fase A')) {
+                kelasSelect.value = "1";
+            } else if (fase.includes('Fase B')) {
+                kelasSelect.value = "4";
+            } else if (fase.includes('Fase C')) {
+                kelasSelect.value = "5";
+            }
+        }
+
+        function insertSampleTP() {
+            const mapel = document.getElementById('mapel').value;
+            const tp = SAMPLE_TPS[mapel] || "Peserta didik dapat menganalisis dan memecahkan masalah kontekstual terkait materi " + mapel + ".";
+            document.getElementById('materi').value = tp;
+        }
+
+        function resetForm() {
+            document.getElementById('generator-form').reset();
+            document.getElementById('materi').value = '';
+        }
+
+        function openHelpModal() { document.getElementById('help-modal').classList.remove('hidden'); }
+        function closeHelpModal() { document.getElementById('help-modal').classList.add('hidden'); }
+
+        async function handleGenerate(e) {
+            e.preventDefault();
+
+            const mapel = document.getElementById('mapel').value;
+            const fase = document.getElementById('fase').value;
+            const kelas = document.getElementById('kelas').value;
+            const jenisSoal = document.getElementById('jenisSoal').value;
+            const jumlahSoal = document.getElementById('jumlahSoal').value;
+            const kesulitan = document.getElementById('kesulitan').value;
+            const tipeStimulus = document.getElementById('tipeStimulus').value;
+            const materi = document.getElementById('materi').value;
+            const genImage = document.getElementById('generate-image-prompt').checked;
+
+            // UI Loading state
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('generated-content').classList.add('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('btn-generate').disabled = true;
+            document.getElementById('btn-generate').classList.add('opacity-60');
+            document.getElementById('status-badge').innerText = "Sedang Memproses AI...";
+
+            // Construct System Prompt & JSON Schema for Gemini API
+            const systemPrompt = `Anda adalah pakar pembuat soal Asesmen SD Kurikulum Merdeka 2026 dari Komunitas Belajar (Kombel) SINABA SD Negeri Soko.
+Tugas Anda adalah menghasilkan paket soal asesmen berstandar HOTS (Higher Order Thinking Skills - C4 Analisis, C5 Evaluasi, atau C6 Mencipta) dengan kualitas sangat tinggi.
+PENTING:
+1. Setiap soal WAJIB memiliki STIMULUS kontekstual yang kaya, panjang (minimal 3-5 kalimat), dan relevan dengan dunia anak SD (misal: cerita kasus, tabel data statistik sederhana, percakapan dialog tokoh, atau skenario masalah).
+2. Soal TIDAK BOLEH berupa hafalan murni. Siswa harus membaca/menganalisis stimulus untuk bisa memecahkan masalah atau mengambil kesimpulan.
+3. Bahasa yang digunakan jelas, interaktif, ramah anak SD, dan mendidik.
+4. Sesuaikan kedalaman materi dengan Kelas ${kelas} Fase ${fase}.
+5. Kembalikan format JSON murni sesuai schema yang diminta tanpa teks tambahan apapun.`;
+
+            const userPrompt = `Buatkan ${jumlahSoal} soal HOTS berkualitas tinggi untuk Sekolah Dasar dengan rincian:
+- Mata Pelajaran: ${mapel}
+- Fase & Kelas: ${fase}, Kelas ${kelas}
+- Jenis Soal: ${jenisSoal}
+- Tingkat Kognitif: ${kesulitan}
+- Tipe Stimulus: ${tipeStimulus} (Buat stimulus yang detail, logis, dan menarik untuk anak-anak)
+- Tujuan Pembelajaran / Materi: ${materi}
+${genImage ? "- WAJIB sertakan ide deskripsi ilustrasi gambar stimulus (visual_description) yang detail dan spesifik untuk setiap soal." : ""}`;
+
+            const jsonSchema = {
+                type: "OBJECT",
+                properties: {
+                    judul_paket: { type: "STRING" },
+                    mata_pelajaran: { type: "STRING" },
+                    fase_kelas: { type: "STRING" },
+                    tujuan_pembelajaran: { type: "STRING" },
+                    soal_list: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                nomor: { type: "INTEGER" },
+                                jenis_soal: { type: "STRING" },
+                                bloom_level: { type: "STRING" },
+                                stimulus_type: { type: "STRING" },
+                                stimulus_title: { type: "STRING" },
+                                stimulus_content: { type: "STRING" },
+                                visual_description: { type: "STRING" },
+                                pertanyaan: { type: "STRING" },
+                                pilihan_jawaban: {
+                                    type: "ARRAY",
+                                    items: { type: "STRING" }
+                                },
+                                kunci_jawaban: { type: "STRING" },
+                                pembahasan: { type: "STRING" },
+                                rubrik_penskoran: { type: "STRING" }
+                            },
+                            required: ["nomor", "pertanyaan", "kunci_jawaban", "pembahasan", "stimulus_content"]
+                        }
+                    }
+                },
+                required: ["judul_paket", "soal_list"]
+            };
+
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: userPrompt }]
+                    }
+                ],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: jsonSchema,
+                    temperature: 0.7
+                }
+            };
+
+            const apiKey = ""; // Canvas proxy will populate at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    const parsedData = JSON.parse(jsonText);
+                    
+                    currentGeneratedData = parsedData;
+                    renderGeneratedWorksheet(parsedData, mapel, kelas, fase, kesulitan, materi);
+                    saveToLocalStorage(parsedData);
+                    
+                    document.getElementById('status-badge').innerText = "Soal Berhasil Dibuat!";
+                } else {
+                    throw new Error("Format respons AI tidak sesuai.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Gagal memproses pembuatan soal HOTS. Pastikan koneksi internet stabil dan coba lagi.\nDetail: " + err.message);
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('status-badge').innerText = "Gagal Generate";
+            } finally {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('btn-generate').disabled = false;
+                document.getElementById('btn-generate').classList.remove('opacity-60');
+            }
+        }
+
+        // Helper fetch with Exponential Backoff
+        async function fetchWithRetry(url, options, maxRetries = 3) {
+            let delay = 1000;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const res = await fetch(url, options);
+                    if (res.ok) return res;
+                } catch (e) {
+                    if (i === maxRetries - 1) throw e;
+                }
+                await new Promise(r => setTimeout(r, delay));
+                delay *= 2;
+            }
+            return await fetch(url, options);
+        }
+
+        function renderGeneratedWorksheet(data, mapel, kelas, fase, kesulitan, materi) {
+            document.getElementById('out-mapel').innerText = mapel;
+            document.getElementById('out-kelas-fase').innerText = `Kelas ${kelas} (${fase})`;
+            document.getElementById('out-kesulitan').innerText = kesulitan;
+            document.getElementById('out-tp-materi').innerText = materi;
+
+            const qContainer = document.getElementById('questions-container');
+            const kContainer = document.getElementById('keys-container');
+            qContainer.innerHTML = '';
+            kContainer.innerHTML = '';
+
+            data.soal_list.forEach((soal, idx) => {
+                const qNum = idx + 1;
+                
+                // Question Card HTML
+                const qCard = document.createElement('div');
+                qCard.className = "soal-item space-y-3 pb-6 border-b border-slate-200 last:border-0";
+                
+                let choicesHtml = '';
+                if (soal.pilihan_jawaban && soal.pilihan_jawaban.length > 0) {
+                    choicesHtml = `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                            ${soal.pilihan_jawaban.map(opt => `
+                                <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-medium text-slate-800 hover:bg-slate-100 transition flex items-start gap-2">
+                                    <span class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center text-[10px] bg-white mt-0.5 shrink-0"></span>
+                                    <span contenteditable="true" class="editable-field flex-1">${opt}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                let visualBoxHtml = '';
+                if (soal.visual_description) {
+                    visualBoxHtml = `
+                        <div class="my-3 p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl text-xs text-indigo-900 flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 font-bold text-sm">
+                                <i class="fa-solid fa-image"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="font-bold text-indigo-950 uppercase tracking-wider text-[10px] block">Ilustrasi Visual Stimulus:</span>
+                                <p contenteditable="true" class="editable-field mt-0.5">${soal.visual_description}</p>
+                                <button onclick="generateAIImageForQuestion(${idx}, '${escapeQuotes(soal.visual_description)}')" class="mt-2 px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-[11px] font-semibold transition inline-flex items-center gap-1 no-print">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Gambar AI
+                                </button>
+                                <div id="img-target-${idx}" class="mt-2 hidden"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                qCard.innerHTML = `
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-brand-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                                ${qNum}
+                            </span>
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                                [${soal.jenis_soal || 'HOTS'}] • <span class="text-brand-600">${soal.bloom_level || 'C4-C6'}</span>
+                            </span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-medium no-print">Klik teks untuk mengedit</span>
+                    </div>
+
+                    <!-- Stimulus Box -->
+                    <div class="stimulus-box p-4 rounded-r-xl border-l-4 border-brand-500 bg-slate-50 space-y-1.5">
+                        <div class="flex items-center gap-1.5 text-xs font-bold text-brand-700">
+                            <i class="fa-solid fa-file-lines"></i>
+                            <span contenteditable="true" class="editable-field">${soal.stimulus_title || 'STIMULUS BACAN / DATA'}</span>
+                        </div>
+                        <div contenteditable="true" class="editable-field text-xs text-slate-700 leading-relaxed whitespace-pre-line font-serif italic">${soal.stimulus_content}</div>
+                    </div>
+
+                    ${visualBoxHtml}
+
+                    <!-- Pertanyaan -->
+                    <div class="pt-1">
+                        <p contenteditable="true" class="editable-field text-sm font-semibold text-slate-900 leading-snug">${soal.pertanyaan}</p>
+                    </div>
+
+                    <!-- Pilihan Jawaban -->
+                    ${choicesHtml}
+                `;
+                qContainer.appendChild(qCard);
+
+                // Answer Key Card HTML
+                const kCard = document.createElement('div');
+                kCard.className = "bg-white p-3.5 rounded-xl border border-slate-200 space-y-1.5 shadow-sm";
+                kCard.innerHTML = `
+                    <div class="flex items-center justify-between font-bold text-xs text-slate-800">
+                        <span>Soal No. ${qNum} (${soal.jenis_soal || 'HOTS'})</span>
+                        <span class="text-emerald-600 font-extrabold">${soal.bloom_level || 'HOTS'}</span>
+                    </div>
+                    <div class="text-xs text-slate-700">
+                        <strong>Kunci Jawaban:</strong> <span contenteditable="true" class="editable-field text-emerald-700 font-bold">${soal.kunci_jawaban}</span>
+                    </div>
+                    <div class="text-xs text-slate-600">
+                        <strong>Pembahasan HOTS:</strong> <p contenteditable="true" class="editable-field text-slate-600 italic mt-0.5">${soal.pembahasan}</p>
+                    </div>
+                    ${soal.rubrik_penskoran ? `
+                        <div class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-200 mt-1">
+                            <strong>Pedoman Penskoran:</strong> ${soal.rubrik_penskoran}
+                        </div>
+                    ` : ''}
+                `;
+                kContainer.appendChild(kCard);
+            });
+
+            document.getElementById('generated-content').classList.remove('hidden');
+        }
+
+        function escapeQuotes(str) {
+            return str ? str.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+        }
+
+        async function generateAIImageForQuestion(index, promptText) {
+            const targetDiv = document.getElementById(`img-target-${index}`);
+            targetDiv.classList.remove('hidden');
+            targetDiv.innerHTML = `
+                <div class="p-3 bg-white rounded-lg border border-indigo-200 text-center text-xs text-indigo-600 animate-pulse">
+                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Membuat Ilustrasi Gambar dengan Gemini AI...
+                </div>
+            `;
+
+            const imagePrompt = `Ilustrasi ramah anak SD, gaya kartun edukatif 2D yang ceria dan jelas, tanpa teks rumit, resolusi bagus: ${promptText}`;
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    role: 'user',
+                    parts: [{ text: imagePrompt }]
+                }],
+                generationConfig: {
+                    responseModalities: ['IMAGE'],
+                    imageConfig: { aspectRatio: "16:9" }
+                }
+            };
+
+            try {
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+                if (part && part.inlineData) {
+                    const base64Data = part.inlineData.data;
+                    const mimeType = part.inlineData.mimeType || 'image/png';
+                    targetDiv.innerHTML = `
+                        <div class="mt-2 text-center">
+                            <img src="data:${mimeType};base64,${base64Data}" alt="Ilustrasi Soal" class="max-h-56 mx-auto rounded-lg shadow border border-indigo-200 object-contain">
+                            <span class="text-[10px] text-slate-400 block mt-1">Gambar Ilustrasi Stimulus Soal No. ${index + 1}</span>
+                        </div>
+                    `;
+                } else {
+                    targetDiv.innerHTML = `<span class="text-xs text-red-500">Gagal memuat gambar dari AI. Coba generate ulang.</span>`;
+                }
+            } catch (e) {
+                console.error(e);
+                targetDiv.innerHTML = `<span class="text-xs text-red-500">Terjadi kesalahan koneksi saat pembuatan gambar.</span>`;
+            }
+        }
+
+        function toggleKeyAnswers() {
+            showKeyAnswers = !showKeyAnswers;
+            const keySection = document.getElementById('answer-key-section');
+            const toggleText = document.getElementById('toggle-key-text');
+            const btnKey = document.getElementById('btn-toggle-key');
+
+            if (showKeyAnswers) {
+                keySection.classList.remove('hidden');
+                toggleText.innerText = "Sembunyikan Kunci";
+                btnKey.querySelector('i').className = "fa-solid fa-eye-slash";
+            } else {
+                keySection.classList.add('hidden');
+                toggleText.innerText = "Tampilkan Kunci";
+                btnKey.querySelector('i').className = "fa-solid fa-eye";
+            }
+        }
+
+        function printWorksheet() {
+            if (!currentGeneratedData) {
+                alert("Harap klik tombol 'Generate Soal HOTS Otomatis' terlebih dahulu sebelum mencetak!");
+                return;
+            }
+            try {
+                window.print();
+            } catch (err) {
+                alert("Gagal memunculkan dialog cetak. Browser Anda mungkin memblokir pop-up cetak.");
+            }
+        }
+
+        function exportToDocx() {
+            if (!currentGeneratedData) {
+                alert("Harap klik tombol 'Generate Soal HOTS Otomatis' terlebih dahulu sebelum mengunduh DOCX!");
+                return;
+            }
+
+            try {
+                const mapel = document.getElementById('out-mapel').innerText;
+                const kelasFase = document.getElementById('out-kelas-fase').innerText;
+                const tpMateri = document.getElementById('out-tp-materi').innerText;
+
+                // Generate structured Word HTML string
+                let questionsHtml = '';
+                const questions = document.querySelectorAll('#questions-container .soal-item');
+                
+                questions.forEach((q, idx) => {
+                    const stimTitle = q.querySelector('.stimulus-box .font-bold')?.innerText || 'STIMULUS';
+                    const stimContent = q.querySelector('.stimulus-box .editable-field')?.innerText || '';
+                    const questionText = q.querySelector('.pt-1 p')?.innerText || '';
+                    
+                    let choicesList = '';
+                    const choices = q.querySelectorAll('.grid > div');
+                    if (choices.length > 0) {
+                        choicesList = '<table style="width:100%; border:none; margin-top:8px;">';
+                        choices.forEach(c => {
+                            choicesList += `<tr><td style="padding:4px; border:none;">• ${c.innerText.trim()}</td></tr>`;
+                        });
+                        choicesList += '</table>';
+                    }
+
+                    questionsHtml += `
+                        <div style="margin-bottom: 20px; page-break-inside: avoid;">
+                            <p style="font-weight: bold; margin-bottom: 4px;">Soal No. ${idx + 1}</p>
+                            <div style="background-color: #f2f4f8; border-left: 4px solid #0284c7; padding: 10px; margin-bottom: 10px;">
+                                <strong style="color: #0369a1; font-size: 10pt;">${stimTitle}</strong>
+                                <p style="font-style: italic; font-size: 10.5pt; margin-top: 4px; font-family: 'Georgia', serif;">${stimContent}</p>
+                            </div>
+                            <p style="font-size: 11pt; font-weight: bold;">${questionText}</p>
+                            ${choicesList}
+                        </div>
+                    `;
+                });
+
+                let keysHtml = '';
+                const keys = document.querySelectorAll('#keys-container > div');
+                keys.forEach((k, idx) => {
+                    keysHtml += `<div style="margin-bottom: 12px; font-size: 10pt; border-bottom: 1px border #ddd; padding-bottom: 6px;">${k.innerHTML}</div>`;
+                });
+
+                const docContent = `
+                    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head>
+                        <meta charset='utf-8'>
+                        <title>Paket Soal HOTS SD - Kombel SINABA</title>
+                        <style>
+                            body { font-family: 'Calibri', 'Times New Roman', sans-serif; font-size: 11pt; line-height: 1.3; color: #1e293b; }
+                            .kop { text-align: center; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 16px; }
+                            .kop h3 { margin: 0; font-size: 14pt; font-weight: bold; }
+                            .kop h2 { margin: 0; font-size: 16pt; font-weight: bold; }
+                            .kop p { margin: 2px 0; font-size: 9pt; }
+                            .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; background-color: #f8fafc; }
+                            .meta-table td { border: 1px solid #cbd5e1; padding: 6px; font-size: 10pt; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="kop">
+                            <p>PEMERINTAH KOTA PEKALONGAN</p>
+                            <h2>SD NEGERI SOKO</h2>
+                            <p style="font-weight:bold;">ASESMEN KURIKULUM MERDEKA 2026</p>
+                            <p>Dibuat oleh Komunitas Belajar (Kombel) SINABA SD Negeri Soko</p>
+                        </div>
+
+                        <table class="meta-table">
+                            <tr>
+                                <td><strong>Mata Pelajaran:</strong> ${mapel}</td>
+                                <td><strong>Kelas / Fase:</strong> ${kelasFase}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><strong>Tujuan Pembelajaran:</strong> ${tpMateri}</td>
+                            </tr>
+                        </table>
+
+                        <h3 style="text-align:center; text-decoration:underline; margin-bottom:15px;">PAKET SOAL HOTS SD</h3>
+
+                        ${questionsHtml}
+
+                        <br style="page-break-before:always;" />
+
+                        <h3 style="background-color:#e2e8f0; padding:6px; font-size:12pt; border:1px solid #94a3b8;">KUNCI JAWABAN & PEDOMAN PENSKORAN</h3>
+                        ${keysHtml}
+
+                        <div style="margin-top:30px; text-align:right; font-size:10pt;">
+                            <p>Mengetahui,<br>Guru Kelas / Penyusun</p>
+                            <br><br><br>
+                            <p><strong>( ________________________ )</strong><br>NIP.</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                const blob = new Blob(['\ufeff' + docContent], {
+                    type: 'application/msword'
+                });
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Soal_HOTS_${mapel.replace(/\s+/g, '_')}_Kelas_${kelasFase.replace(/\s+/g, '_')}.doc`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error(err);
+                alert("Gagal mengekspor file DOCX. Terjadi kesalahan pada saat pemrosesan.");
+            }
+        }
+
+        function copyToClipboard() {
+            const content = document.getElementById('worksheet-paper').innerText;
+            const el = document.createElement('textarea');
+            el.value = content;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert('Seluruh soal dan teks berhasil disalin ke clipboard!');
+        }
+
+        // Local Storage Bank Soal Functions
+        function saveToLocalStorage(parsedData) {
+            const newItem = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                mapel: document.getElementById('mapel').value,
+                kelas: document.getElementById('kelas').value,
+                fase: document.getElementById('fase').value,
+                tp: document.getElementById('materi').value,
+                data: parsedData
+            };
+
+            savedBankSoal.unshift(newItem);
+            if (savedBankSoal.length > 20) savedBankSoal.pop(); // limit 20
+            localStorage.setItem('sinaba_bank_soal', JSON.stringify(savedBankSoal));
+            updateSavedCount();
+            renderSavedBankList();
+        }
+
+        function updateSavedCount() {
+            document.getElementById('saved-count').innerText = savedBankSoal.length;
+        }
+
+        function renderSavedBankList() {
+            const container = document.getElementById('bank-list');
+            if (savedBankSoal.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400 text-xs">
+                        Belum ada bank soal yang tersimpan.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = savedBankSoal.map((item, idx) => `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow transition flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-50 text-brand-700">${item.mapel}</span>
+                            <span class="text-[10px] text-slate-400">${item.date}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm">Kelas ${item.kelas} (${item.fase})</h4>
+                        <p class="text-xs text-slate-500 line-clamp-2 mt-1">${item.tp}</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <span class="text-[10px] text-slate-400">${item.data.soal_list?.length || 0} Soal HOTS</span>
+                        <div class="flex items-center gap-1">
+                            <button onclick="loadFromBank(${idx})" class="px-2.5 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded text-[11px] font-semibold transition">
+                                Buka Paket
+                            </button>
+                            <button onclick="deleteFromBank(${idx})" class="p-1 text-slate-400 hover:text-red-600 transition">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadFromBank(idx) {
+            const item = savedBankSoal[idx];
+            if (!item) return;
+
+            currentGeneratedData = item.data;
+            switchTab('generator');
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            renderGeneratedWorksheet(item.data, item.mapel, item.kelas, item.fase, "Sedang (C5)", item.tp);
+            document.getElementById('status-badge').innerText = "Memuat Bank Soal Tersimpan";
+        }
+
+        function deleteFromBank(idx) {
+            if (confirm("Hapus paket soal ini dari Bank Soal?")) {
+                savedBankSoal.splice(idx, 1);
+                localStorage.setItem('sinaba_bank_soal', JSON.stringify(savedBankSoal));
+                updateSavedCount();
+                renderSavedBankList();
+            }
+        }
+
+        function clearAllSaved() {
+            if (confirm("Yakin ingin menghapus SELURUH Bank Soal tersimpan?")) {
+                savedBankSoal = [];
+                localStorage.removeItem('sinaba_bank_soal');
+                updateSavedCount();
+                renderSavedBankList();
+            }
+        }
+    </script>
+</body>
+</html>
+```
