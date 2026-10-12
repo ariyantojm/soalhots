@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Soal HOTS Otomatis SD - Kombel SINABA SDN Soko</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                        },
+                        sinaba: {
+                            emerald: '#059669',
+                            amber: '#d97706',
+                            purple: '#7c3aed',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; font-size: 12pt; }
+            .page-break { page-break-before: always; }
+            .card-shadow { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+        .print-only { display: none; }
+        
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .stimulus-box {
+            border-left: 4px solid #0284c7;
+            background-color: #f8fafc;
+        }
+
+        .editable-field:focus {
+            outline: 2px solid #0284c7;
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <header class="bg-gradient-to-r from-brand-800 via-brand-700 to-indigo-900 text-white shadow-lg sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full shadow-sm border border-white/20 bg-white/10 text-amber-300">
+                        <i class="fa-solid fa-brain text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white">GENERATOR SOAL HOTS SD</h1>
+                            <span class="bg-amber-400 text-slate-900 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Kurikulum Merdeka 2026</span>
+                        </div>
+                        <p class="text-xs text-brand-100 flex items-center gap-1.5">
+                            <span><i class="fa-solid fa-users-gear text-amber-300"></i> Dibuat oleh: <strong>Kombel SINABA</strong> SD Negeri Soko</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="switchTab('generator')" id="nav-btn-generator" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/20 text-white hover:bg-white/30 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generator
+                    </button>
+                    <button onclick="switchTab('bankSoal')" id="nav-btn-bankSoal" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 text-brand-100 hover:bg-white/20 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-box-archive"></i> Bank Soal Tersimpan (<span id="saved-count">0</span>)
+                    </button>
+                    <button onclick="openHelpModal()" class="p-1.5 text-brand-100 hover:text-white hover:bg-white/10 rounded-lg transition" title="Bantuan & Panduan">
+                        <i class="fa-solid fa-circle-question text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- Tab 1: Generator Form & Result Preview -->
+        <div id="tab-generator" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Panel: Input Configuration Form -->
+            <div class="lg:col-span-4 space-y-5 no-print">
+                
+                <!-- Konfigurasi API -->
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                        <h2 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-key text-amber-500"></i> Konfigurasi API Key
+                        </h2>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <input type="password" id="api-key-input" placeholder="Paste API Key Gemini di sini..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[9px] text-slate-500 leading-tight flex-1">
+                                Dapatkan key gratis di <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-brand-600 hover:underline font-bold">Google AI Studio</a>. (Disimpan lokal di browser).
+                            </p>
+                            <button type="button" onclick="saveApiKey()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-[10px] font-bold transition shrink-0">
+                                Simpan Key
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute -top-12 -right-12 w-28 h-28 bg-brand-50 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                        <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+                            <i class="fa-solid fa-sliders text-brand-500"></i> Parameter Soal HOTS
+                        </h2>
+                        <button onclick="resetForm()" class="text-xs text-slate-400 hover:text-brand-600 flex items-center gap-1 transition">
+                            <i class="fa-solid fa-rotate-left"></i> Reset
+                        </button>
+                    </div>
+
+                    <form id="generator-form" onsubmit="handleGenerate(event)" class="space-y-4">
+                        
+                        <!-- Mata Pelajaran -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Mata Pelajaran SD</label>
+                            <div class="relative">
+                                <select id="mapel" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-brand-500 focus:bg-white transition appearance-none">
+                                    <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                                    <option value="Bahasa Indonesia" selected>Bahasa Indonesia</option>
+                                    <option value="PAI & Budi Pekerti">PAI & Budi Pekerti</option>
+                                    <option value="IPAS">IPAS (Ilmu Pengetahuan Alam & Sosial)</option>
+                                    <option value="PJOK">PJOK (Pendidikan Jasmani, Olahraga & Kesehatan)</option>
+                                    <option value="Matematika">Matematika</option>
+                                    <option value="Seni Rupa">Seni Rupa</option>
+                                    <option value="Seni Tari">Seni Tari</option>
+                                    <option value="Seni Musik">Seni Musik</option>
+                                    <option value="Koding & Berpikir Komputasional">Koding & KA (Koding & Berpikir Komputasional)</option>
+                                    <option value="Bahasa Inggris">Bahasa Inggris</option>
+                                    <option value="Bahasa Jawa">Bahasa Jawa (Muatan Lokal)</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-3 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <!-- Fase & Kelas Row -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Fase Kurikulum</label>
+                                <select id="fase" onchange="syncKelasByFase()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Fase A (Kelas 1-2)">Fase A</option>
+                                    <option value="Fase B (Kelas 3-4)" selected>Fase B</option>
+                                    <option value="Fase C (Kelas 5-6)">Fase C</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Kelas SD</label>
+                                <select id="kelas" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="1">Kelas 1</option>
+                                    <option value="2">Kelas 2</option>
+                                    <option value="3">Kelas 3</option>
+                                    <option value="4" selected>Kelas 4</option>
+                                    <option value="5">Kelas 5</option>
+                                    <option value="6">Kelas 6</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Jenis Soal & Jumlah -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Jenis Soal</label>
+                                <select id="jenisSoal" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Pilihan Ganda">Pilihan Ganda</option>
+                                    <option value="Pilihan Ganda Kompleks">Pilihan Ganda Kompleks</option>
+                                    <option value="Menjodohkan">Menjodohkan</option>
+                                    <option value="Isian Singkat">Isian Singkat</option>
+                                    <option value="Uraian / Essay">Uraian / Essay</option>
+                                    <option value="Campuran (PG, Isian, Uraian)">Campuran Variatif</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Jumlah Soal</label>
+                                <select id="jumlahSoal" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="1">1 Soal Contoh</option>
+                                    <option value="3" selected>3 Soal</option>
+                                    <option value="5">5 Soal</option>
+                                    <option value="10">10 Soal Paket Kompleks</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Tingkat Kesulitan HOTS & Jenis Stimulus -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tingkat HOTS</label>
+                                <select id="kesulitan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Mudah (C4 - Menganalisis)">Mudah (C4 - Analisis)</option>
+                                    <option value="Sedang (C5 - Mengevaluasi)" selected>Sedang (C5 - Evaluasi)</option>
+                                    <option value="Sulit (C6 - Mencipta / Problem Solving)">Sulit (C6 - Mencipta)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bentuk Stimulus</label>
+                                <select id="tipeStimulus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                                    <option value="Otomatis Sesuai Materi" selected>Otomatis AI</option>
+                                    <option value="Cerita Studi Kasus">Cerita / Kasus</option>
+                                    <option value="Tabel Data / Grafik Textual">Tabel Data / Grafik</option>
+                                    <option value="Dialog Percakapan">Dialog Tokoh SD</option>
+                                    <option value="Skenario Problem Solving">Skenario Masalah</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Materi / Tujuan Pembelajaran (TP) -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Materi / Tujuan Pembelajaran (TP)</label>
+                                <button type="button" onclick="insertSampleTP()" class="text-[11px] text-brand-600 hover:underline font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-lightbulb text-amber-500"></i> Contoh TP
+                                </button>
+                            </div>
+                            <textarea id="materi" rows="3" required placeholder="Tuliskan materi atau TP spesifik. Contoh: Menganalisis dampak sampah plastik terhadap ekosistem sungai dan merumuskan solusinya..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 focus:ring-2 focus:ring-brand-500 focus:bg-white transition resize-none"></textarea>
+                        </div>
+
+                        <!-- Checkbox Opsi Tambahan -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="generate-image-prompt" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                                <span class="text-xs font-medium text-slate-700">Sertakan Ilustrasi Gambar pada Stimulus</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="include-rubrik" checked class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                                <span class="text-xs font-medium text-slate-700">Sertakan Kunci Jawaban & Rubrik Penskoran</span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="btn-generate" class="w-full py-3.5 px-4 bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.99] flex items-center justify-center gap-2 text-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                            <span>Generate Soal HOTS Otomatis</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Card Informasi Kombel -->
+                <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-4 rounded-2xl shadow-sm border border-indigo-800 text-xs leading-relaxed space-y-2">
+                    <div class="flex items-center gap-2 text-amber-300 font-bold">
+                        <div class="w-6 h-6 flex items-center justify-center rounded-full bg-white/10">
+                            <i class="fa-solid fa-brain text-sm"></i>
+                        </div>
+                        <span>Kombel SINABA - SD Negeri Soko</span>
+                    </div>
+                    <p class="text-slate-300">
+                        Inisiatif Komunitas Belajar SD Negeri Soko untuk membantu guru menyusun asesmen berkualitas tinggi sesuai standar Kurikulum Merdeka & prinsip HOTS (High Order Thinking Skills).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Panel: Output Document Preview & Action Bar -->
+            <div class="lg:col-span-8 space-y-4">
+                
+                <!-- Action Toolbar for Results -->
+                <div id="action-toolbar" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
+    
